@@ -476,6 +476,6 @@
     0,
     128
   ],
-  "imagePath": "2011_000003.jpg",
+  "imagePath": "../data_dataset_voc/JPEGImages/2011_000003.jpg",
   "imageData": null
 }
