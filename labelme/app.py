@@ -194,12 +194,22 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                        'Open image or label file')
         opendir = action('&Open Dir', self.openDirDialog,
                          shortcuts['open_dir'], 'open', u'Open Dir')
-        openNextImg = action('&Next Image', self.openNextImg,
-                             shortcuts['open_next'], 'next', u'Open Next',
-                             enabled=False)
-        openPrevImg = action('&Prev Image', self.openPrevImg,
-                             shortcuts['open_prev'], 'prev', u'Open Prev',
-                             enabled=False)
+        openNextImg = action(
+            '&Next Image',
+            self.openNextImg,
+            shortcuts['open_next'],
+            'next',
+            u'Open next (hold Ctl+Shift to copy labels)',
+            enabled=False,
+        )
+        openPrevImg = action(
+            '&Prev Image',
+            self.openPrevImg,
+            shortcuts['open_prev'],
+            'prev',
+            u'Open prev (hold Ctl+Shift to copy labels)',
+            enabled=False,
+        )
         save = action('&Save', self.saveFile, shortcuts['save'], 'save',
                       'Save labels to file', enabled=False)
         saveAs = action('&Save As', self.saveFileAs, shortcuts['save_as'],
@@ -1154,6 +1164,11 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             self.loadFile(filename)
 
     def openPrevImg(self, _value=False):
+        keep_prev = self._config['keep_prev']
+        if QtGui.QGuiApplication.keyboardModifiers() == \
+                (QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier):
+             self._config['keep_prev'] = True
+
         if not self.mayContinue():
             return
 
@@ -1169,7 +1184,14 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             if filename:
                 self.loadFile(filename)
 
+        self._config['keep_prev'] = keep_prev
+
     def openNextImg(self, _value=False, load=True):
+        keep_prev = self._config['keep_prev']
+        if QtGui.QGuiApplication.keyboardModifiers() == \
+                (QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier):
+             self._config['keep_prev'] = True
+
         if not self.mayContinue():
             return
 
@@ -1189,6 +1211,8 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
 
         if self.filename and load:
             self.loadFile(self.filename)
+
+        self._config['keep_prev'] = keep_prev
 
     def openFile(self, _value=False):
         if not self.mayContinue():
